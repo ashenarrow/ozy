@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Ozyrix Launcher</title>
+  <link rel="stylesheet" href="assets/style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <style>
+    /* Additional styling for filter controls */
+    .filter-controls {
+      margin: 20px 0;
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .filter-controls label {
+      font-family: var(--font-body);
+      color: var(--text-bright);
+    }
+    .filter-controls select,
+    .filter-controls input[type="search"] {
+      padding: 5px 10px;
+      font-family: var(--font-body);
+      background-color: var(--background-light);
+      border: 1px solid var(--secondary-color);
+      color: var(--text-bright);
+    }
+    /* Style each app container */
+    .app {
+      border: 1px solid var(--secondary-color);
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+    /* Styling for the navigation link back to index.html */
+    .back-link {
+      display: inline-block;
+      margin-bottom: 20px;
+      padding: 8px 12px;
+      background-color: var(--background-light);
+      border: 1px solid var(--secondary-color);
+      text-decoration: none;
+      color: var(--text-bright);
+      font-family: var(--font-body);
+    }
+    /* Button styling */
+    .action-button {
+      padding: 8px 12px;
+      margin-right: 5px;
+      background-color: var(--background-light);
+      border: 1px solid var(--secondary-color);
+      color: var(--text-bright);
+      cursor: pointer;
+      font-family: var(--font-body);
+    }
+  </style>
+</head>
+<body>
+  <a href="launch.html#desktop" class="back-link" id="backToHome">&larr; Back to Home</a>
+
+  <div class="terminal-background" style="padding:20px;">
+    <h1 class="glitch-text" data-text="Ozyrix Launcher">Ozyrix Launcher</h1>
+    <p>Select a destination folder. The app will create an <strong>apps</strong> subfolder and download &amp; extract apps there.</p>
+    
+    <button id="selectFolderBtn" class="action-button">Select Destination Folder</button>
+    <div id="selectedFolderInfo" style="margin-top:10px; font-size:14px;"></div>
+    
+    <div class="filter-controls">
+      <label for="searchInput">Search:
+        <input type="search" id="searchInput" placeholder="Search apps...">
+      </label>
+      <label for="categoryFilter">Category:
+        <select id="categoryFilter">
+          <option value="all">All</option>
+          <option value="exploit">Exploit</option>
+          <option value="recon">Unblocker</option>
+          <option value="utilities">Utilities</option>
+          <option value="utilities">Game</option>
+          <option value="utilities">Emulator</option>
+          <option value="other">Other</option>
+        </select>
+      </label>
+      <label for="sortFilter">Sort by:
+        <select id="sortFilter">
+          <option value="newest">Newest First</option>
+          <option value="oldest">Oldest First</option>
+        </select>
+      </label>
+    </div>
+    
+    <div id="appsList" style="margin-top:30px;"></div>
+  </div>
+  
+  <script>
+    // Global variables:
+    let targetFolderHandle = null;
+    let appsData = [];
+
+    // Function to let the user choose a folder and prepare the "apps" subfolder.
+    document.getElementById('selectFolderBtn').addEventListener('click', async () => {
+      try {
+        // Prompt user to select a folder.
+        targetFolderHandle = await window.showDirectoryPicker();
+        // Create (or verify) the 'apps' folder exists.
+        const appsFolderHandle = await targetFolderHandle.getDirectoryHandle('apps', { create: true });
+        document.getElementById('selectedFolderInfo').textContent =
+          'Selected Folder: ' + targetFolderHandle.name + ' (\'apps\' folder ready)';
+      } catch (err) {
+        console.error(err);
+        alert('Folder selection failed: ' + err.message);
+      }
+    });
+
+    // Fetch apps from your backend API.
+    async function fetchApps() {
+      try {
+        const response = await fetch('http://localhost:3000/api/apps');
+        appsData = await response.json();
+        renderApps();
+      } catch (err) {
+        console.error('Error fetching apps:', err);
+        document.getElementById('appsList').innerHTML = '<p>Error fetching apps. Please try again later.</p>';
+      }
+    }
+
+    // Render apps based on the search, category, and sort selections.
+    function renderApps() {
+      const searchQuery = document.getElementById('searchInput').value.toLowerCase();
+      const category = document.getElementById('categoryFilter').value;
+      const sortOrder = document.getElementById('sortFilter').value;
+      
+      let filteredApps = appsData.filter(app => {
+        // Search: Check if the app's name or description includes the search query.
+        const matchesSearch = app.name.toLowerCase().includes(searchQuery) ||
+                              (app.description && app.description.toLowerCase().includes(searchQuery));
+        // Category filter: Either the category is "all" or matches (case-insensitive).
+        const matchesCategory = (category === 'all') || (app.category && app.category.toLowerCase() === category);
+        return matchesSearch && matchesCategory;
+      });
+
+      // Sort apps by createdAt date.
+      filteredApps.sort((a, b) => {
+        const dateA = new Date(a.createdAt);
+        const dateB = new Date(b.createdAt);
+        return sortOrder === 'newest' ? dateB - dateA : dateA - dateB;
+      });
+
+      const appsListDiv = document.getElementById('appsList');
+      appsListDiv.innerHTML = '';
+
+      if (filteredApps.length === 0) {
+        appsListDiv.innerHTML = '<p>No apps found.</p>';
+        return;
+      }
+
+      filteredApps.forEach(app => {
+        const appDiv = document.createElement('div');
+        appDiv.className = 'app';
+
+        // Limit description to 200 characters:
+        let truncatedDescription = app.description || '';
+        if (truncatedDescription.length > 200) {
+          truncatedDescription = truncatedDescription.substring(0, 200) + '...';
+        }
+
+        appDiv.innerHTML = `
+          <h3>${app.name}</h3>
+          <p>${truncatedDescription}</p>
+          <p><em>Category: ${app.category || 'N/A'}</em></p>
+          <p><em>Uploaded: ${new Date(app.createdAt).toLocaleString()}</em></p>
+          <button class="action-button" onclick="downloadAndExtract('${app.uuid}', '${app.name}')">
+            Download &amp; Extract
+          </button>
+          <button class="action-button" onclick="launchApp('${app.uuid}', '${app.name}')">
+            Launch
+          </button>
+          <button class="action-button" onclick="viewAppDetails('${app.uuid}')">
+            View Details
+          </button>
+        `;
+        appsListDiv.appendChild(appDiv);
+      });
+    }
+
+    // Redirect to the app details page.
+    function viewAppDetails(uuid) {
+      window.location.href = "appDetails.html?uuid=" + encodeURIComponent(uuid);
+    }
+
+    // Download the ZIP file for the given app, extract its contents into a folder named with the UUID,
+    // and save them into the "apps" folder inside the chosen destination folder.
+    async function downloadAndExtract(uuid, name) {
+      if (!targetFolderHandle) {
+        alert('Please select a destination folder first.');
+        return;
+      }
+      try {
+        const appsFolderHandle = await targetFolderHandle.getDirectoryHandle('apps', { create: true });
+        const appSubFolderHandle = await appsFolderHandle.getDirectoryHandle(uuid, { create: true });
+        const response = await fetch(`http://localhost:3000/api/apps/${uuid}/download`);
+        if (!response.ok) {
+          throw new Error('Failed to download app');
+        }
+        const zipBlob = await response.blob();
+        const zip = await JSZip.loadAsync(zipBlob);
+        for (const relativePath in zip.files) {
+          const fileEntry = zip.files[relativePath];
+          if (!fileEntry.dir) {
+            const fileData = await fileEntry.async('uint8array');
+            const pathParts = relativePath.split('/');
+            let currentDirHandle = appSubFolderHandle;
+            for (let i = 0; i < pathParts.length - 1; i++) {
+              currentDirHandle = await currentDirHandle.getDirectoryHandle(pathParts[i], { create: true });
+            }
+            const fileName = pathParts[pathParts.length - 1];
+            const fileHandle = await currentDirHandle.getFileHandle(fileName, { create: true });
+            const writable = await fileHandle.createWritable();
+            await writable.write(fileData);
+            await writable.close();
+          }
+        }
+        alert(`App "${name}" downloaded and extracted successfully into folder "${uuid}".`);
+      } catch (err) {
+        console.error('Download/Extraction error:', err);
+        alert('Download/Extraction failed: ' + err.message);
+      }
+    }
+
+    // Launch the app by opening its index.html file.
+    // Prompt the user to choose between a file:// URL or an object URL.
+    async function launchApp(uuid, name) {
+      if (!targetFolderHandle) {
+        alert('Please select a destination folder first.');
+        return;
+      }
+      
+      const useFileUrl = confirm('Do you want to launch using the file:// URL (relative to store.html)?\n\nSelect OK for file:// URL, or Cancel to use the object URL method.');
+      if (useFileUrl) {
+        const relativePath = "apps/" + uuid + "/index.html";
+        window.open(relativePath, '_blank');
+      } else {
+        try {
+          const appsFolderHandle = await targetFolderHandle.getDirectoryHandle('apps');
+          const appFolderHandle = await appsFolderHandle.getDirectoryHandle(uuid);
+          const indexFileHandle = await appFolderHandle.getFileHandle('index.html');
+          const indexFile = await indexFileHandle.getFile();
+          const fileURL = URL.createObjectURL(indexFile);
+          window.open(fileURL, '_blank');
+        } catch (error) {
+          console.error('Launch error:', error);
+          alert(`Error launching "${name}": index.html not found. Ensure that the app is installed correctly.`);
+        }
+      }
+    }
+
+    // Event listeners for search, category, and sort filter controls.
+    document.getElementById('searchInput').addEventListener('input', renderApps);
+    document.getElementById('categoryFilter').addEventListener('change', renderApps);
+    document.getElementById('sortFilter').addEventListener('change', renderApps);
+
+    // Fetch apps on page load.
+    fetchApps();
+
+    // Preserve token when navigating back to home.
+    document.addEventListener('DOMContentLoaded', () => {
+      const backLink = document.getElementById('backToHome');
+      backLink.addEventListener('click', (event) => {
+        event.preventDefault();
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get('token');
+        let homeUrl = 'launch.html#desktop';
+        if (token) {
+          homeUrl = `launch.html?token=${token}#desktop`;
+        }
+        window.top.location.href = homeUrl;
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OZYRIX - Home</title>
+    <link rel="stylesheet" href="assets/style.css">
+    <link rel="stylesheet" href="assets/pages.css">
+</head>
+<body class="page-body">
+    <div class="page-container">
+        <div class="welcome-section">
+            <h1 class="glitch-text" data-text="WELCOME TO OZYRIX">WELCOME TO OZYRIX</h1>
+            <p class="typewriter">Advanced Hacking System - Access Level: ALPHA</p>
+            
+            <div class="system-info">
+                <div class="info-box">
+                    <h3>SYSTEM STATUS</h3>
+                    <div class="status-grid">
+                        <div class="status-item">
+                            <span class="status-label">MAIN CORE:</span>
+                            <span class="status-value online">ONLINE</span>
+                        </div>
+                        <div class="status-item">
+                            <span class="status-label">PROXY CHAIN:</span>
+                            <span class="status-value online">ACTIVE</span>
+                        </div>
+                        <div class="status-item">
+                            <span class="status-label">SECURITY:</span>
+                            <span class="status-value warning">LEVEL 2</span>
+                        </div>
+                        <div class="status-item">
+                            <span class="status-label">ENCRYPTION:</span>
+                            <span class="status-value online">AES-256</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="info-box">
+                    <h3>LATEST TRANSMISSION</h3>
+                    <div class="transmission">
+                        <p class="transmission-text">
+                            ATTENTION ALL USERS: The Ozyrix system has been upgraded to version 3.0. 
+                            New features include enhanced security protocols, improved terminal functionality,
+                            and advanced encryption algorithms. Navigate to the REPOSITORY to discover the
+                            latest hacking tools and applications.
+                        </p>
+                        <p class="transmission-signature">-- SYSTEM ADMIN [ENCRYPTED]</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="quick-actions">
+                <a href="store.html" class="action-button" target="_top">
+                    <span class="button-icon"></span>
+                    <span class="button-text">BROWSE REPOSITORY</span>
+                </a>
+                <a href="upload.html" class="action-button">
+                    <span class="button-icon"></span>
+                    <span class="button-text">UPLOAD TOOL</span>
+                </a>
+                <a href="#" class="action-button" id="openTerminalBtn">
+                    <span class="button-icon"></span>
+                    <span class="button-text">OPEN TERMINAL</span>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <script src="assets/js/pages/home.js"></script>
+    <script>
+        //Folder selector bypass
+  window.addEventListener('message', async (event) => {
+    if (event.data?.type === 'request-folder') {
+      try {
+        const folderHandle = await window.showDirectoryPicker();
+        // Prepare data to send back (cannot send the handle directly)
+        const folderData = await prepareFolderData(folderHandle);
+        event.source.postMessage({ type: 'folder-selected', folderData }, event.origin);
+      } catch (err) {
+        event.source.postMessage({ type: 'folder-error', error: err.message }, event.origin);
+      }
+    }
+  });
+
+  // Function to prepare folder data to send to iframe
+  async function prepareFolderData(folderHandle) {
+  }
+</script>
+</body>
+</html>

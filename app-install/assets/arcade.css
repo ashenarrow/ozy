@@ -1,0 +1,233 @@
+/* Arcade specific styles */
+.arcade-body {
+    background-color: var(--background-dark);
+    background-image: 
+        radial-gradient(circle at 10% 20%, rgba(10, 189, 198, 0.1) 0%, transparent 20%),
+        radial-gradient(circle at 90% 80%, rgba(185, 103, 255, 0.1) 0%, transparent 20%);
+}
+
+.arcade-container {
+    display: grid;
+    grid-template-columns: 1fr 3fr;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.game-selection {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.game-card {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    background-color: var(--background-light);
+    border: 1px solid var(--secondary-color);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.game-card:hover {
+    background-color: var(--background-medium);
+    transform: translateX(5px);
+}
+
+.game-card.active {
+    background-color: rgba(0, 255, 65, 0.1);
+    border-color: var(--primary-color);
+}
+
+.game-icon {
+    font-size: 1.5rem;
+}
+
+.game-title {
+    font-family: var(--font-display);
+    letter-spacing: 1px;
+}
+
+.game-container {
+    display: flex;
+    gap: 20px;
+}
+
+.game-screen {
+    flex: 3;
+    background-color: var(--background-light);
+    border: 1px solid var(--secondary-color);
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 4/3;
+}
+
+#gameCanvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.game-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    text-align: center;
+}
+
+.game-overlay h2 {
+    font-family: var(--font-display);
+    color: var(--primary-color);
+    margin-bottom: 15px;
+    font-size: 2rem;
+    text-shadow: 0 0 10px var(--primary-color);
+}
+
+.game-overlay p {
+    color: var(--text-dim);
+    margin-bottom: 30px;
+    max-width: 600px;
+}
+
+.game-controls {
+    display: flex;
+    gap: 40px;
+    margin-bottom: 30px;
+}
+
+.control-group {
+    text-align: center;
+}
+
+.control-group h3 {
+    color: var(--secondary-color);
+    margin-bottom: 10px;
+    font-size: 1rem;
+}
+
+.key-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+.key-row {
+    display: flex;
+    gap: 5px;
+}
+
+.key {
+    width: 40px;
+    height: 40px;
+    background-color: var(--background-light);
+    border: 1px solid var(--secondary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-mono);
+    color: var(--text-bright);
+    box-shadow: 0 3px 0 var(--background-medium);
+}
+
+.score-display {
+    margin: 20px 0;
+    text-align: center;
+}
+
+.score-label {
+    color: var(--text-dim);
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+}
+
+.score-value {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    color: var(--primary-color);
+}
+
+.high-score {
+    margin-bottom: 30px;
+}
+
+.game-sidebar {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.score-board {
+    background-color: var(--background-light);
+    border: 1px solid var(--secondary-color);
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.score-item {
+    text-align: center;
+}
+
+.game-leaderboard {
+    background-color: var(--background-light);
+    border: 1px solid var(--secondary-color);
+    padding: 15px;
+    flex: 1;
+}
+
+.game-leaderboard h3 {
+    color: var(--secondary-color);
+    margin-bottom: 15px;
+    text-align: center;
+    font-family: var(--font-display);
+}
+
+.leaderboard-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.leaderboard-entry {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px;
+    background-color: var(--background-medium);
+    border-left: 3px solid var(--secondary-color);
+}
+
+.leaderboard-rank {
+    color: var(--secondary-color);
+    font-weight: bold;
+}
+
+.leaderboard-score {
+    color: var(--primary-color);
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+    .arcade-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .game-container {
+        flex-direction: column;
+    }
+    
+    .game-screen {
+        aspect-ratio: 16/9;
+    }
+}

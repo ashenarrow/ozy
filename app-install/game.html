@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OZYRIX - Arcade</title>
+    <link rel="stylesheet" href="assets/style.css">
+    <link rel="stylesheet" href="assets/pages.css">
+    <link rel="stylesheet" href="assets/arcade.css">
+</head>
+<body class="page-body arcade-body">
+    <div class="page-container">
+        <div class="page-header">
+            <h1 class="glitch-text" data-text="DEEP SPACE ARCADE">DEEP SPACE ARCADE</h1>
+            <p class="subtitle">Take a break with these built-in games</p>
+        </div>
+        
+        <div class="arcade-container">
+            <div class="game-selection">
+                <div class="game-card active" data-game="asteroids">
+                    <div class="game-icon">🌠</div>
+                    <div class="game-title">ASTEROIDS</div>
+                </div>
+                <div class="game-card" data-game="snake">
+                    <div class="game-icon">🐍</div>
+                    <div class="game-title">SNAKE</div>
+                </div>
+                <div class="game-card" data-game="tetris">
+                    <div class="game-icon">🧱</div>
+                    <div class="game-title">TETRIS</div>
+                </div>
+                <div class="game-card" data-game="pong">
+                    <div class="game-icon">🏓</div>
+                    <div class="game-title">PONG</div>
+                </div>
+                <div class="game-card" data-game="spaceinvaders">
+                    <div class="game-icon">👾</div>
+                    <div class="game-title">SPACE INVADERS</div>
+                </div>
+            </div>
+            
+            <div class="game-container">
+                <div class="game-screen">
+                    <canvas id="gameCanvas"></canvas>
+                    <div id="gameStartScreen" class="game-overlay">
+                        <h2 id="gameTitle">ASTEROIDS</h2>
+                        <p id="gameDescription">Navigate through an asteroid field and survive as long as possible.</p>
+                        <div class="game-controls">
+                            <div class="control-group">
+                                <h3>MOVEMENT</h3>
+                                <div class="key-controls">
+                                    <div class="key">W</div>
+                                    <div class="key-row">
+                                        <div class="key">A</div>
+                                        <div class="key">S</div>
+                                        <div class="key">D</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <h3>ACTIONS</h3>
+                                <div class="key-controls">
+                                    <div class="key">SPACE</div>
+                                    <div class="key">ESC</div>
+                                </div>
+                            </div>
+                        </div>
+                        <button id="startGameBtn" class="action-button">
+                            <span class="button-icon">▶️</span>
+                            <span class="button-text">START GAME</span>
+                        </button>
+                    </div>
+                    <div id="gamePauseScreen" class="game-overlay" style="display: none;">
+                        <h2>GAME PAUSED</h2>
+                        <button id="resumeGameBtn" class="action-button">
+                            <span class="button-icon">▶️</span>
+                            <span class="button-text">RESUME</span>
+                        </button>
+                        <button id="quitGameBtn" class="action-button">
+                            <span class="button-icon">🚪</span>
+                            <span class="button-text">QUIT</span>
+                        </button>
+                    </div>
+                    <div id="gameOverScreen" class="game-overlay" style="display: none;">
+                        <h2>GAME OVER</h2>
+                        <div class="score-display">
+                            <div class="score-label">SCORE</div>
+                            <div id="finalScore" class="score-value">0</div>
+                        </div>
+                        <div class="high-score">
+                            <div class="score-label">HIGH SCORE</div>
+                            <div id="highScore" class="score-value">0</div>
+                        </div>
+                        <button id="playAgainBtn" class="action-button">
+                            <span class="button-icon">🔄</span>
+                            <span class="button-text">PLAY AGAIN</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="game-sidebar">
+                    <div class="score-board">
+                        <div class="score-item">
+                            <div class="score-label">SCORE</div>
+                            <div id="currentScore" class="score-value">0</div>
+                        </div>
+                        <div class="score-item">
+                            <div class="score-label">LEVEL</div>
+                            <div id="currentLevel" class="score-value">1</div>
+                        </div>
+                        <div class="score-item">
+                            <div class="score-label">LIVES</div>
+                            <div id="livesRemaining" class="score-value">3</div>
+                        </div>
+                    </div>
+                    
+                    <div class="game-leaderboard">
+                        <h3>TOP SCORES</h3>
+                        <div id="leaderboardList" class="leaderboard-list">
+                            <!-- Leaderboard entries will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="assets/js/games/game-engine.js"></script>
+    <script src="assets/js/games/asteroids.js"></script>
+    <script src="assets/js/games/snake.js"></script>
+    <script src="assets/js/games/tetris.js"></script>
+    <script src="assets/js/games/pong.js"></script>
+    <script src="assets/js/games/space-invaders.js"></script>
+    <script src="assets/js/pages/arcade.js"></script>
+</body>
+</html>

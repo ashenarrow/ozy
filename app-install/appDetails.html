@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>App Details</title>
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body class="terminal-background">
+  <div id="appDetails" class="modal-content" style="margin: 5% auto;">
+    <div class="modal-header">
+      <h2 id="appName" class="glitch-text" data-text="App Name Here">App Name Here</h2>
+    </div>
+
+    <div class="modal-body">
+      <!-- New element to display the full description -->
+      <p id="appDescription" style="margin-bottom: 20px;"></p>
+
+      <div style="margin-bottom: 20px;">
+        <button id="likeBtn" class="action-button">
+          <span class="button-icon">👍</span>
+          Like (<span id="likeCount">0</span>)
+        </button>
+      </div>
+
+      <div>
+        <h3 class="typewriter" style="margin-bottom: 10px;">Comments</h3>
+        <ul id="commentList" style="margin-bottom: 20px;"></ul>
+        <form id="commentForm">
+          <textarea name="comment" class="form-input" rows="4" required placeholder="Enter a comment" style="margin-bottom: 10px;"></textarea>
+          <button type="submit" class="action-button">
+            <span class="button-icon">💬</span>
+            Submit Comment
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = 'http://localhost:3000/api';
+    const likeBtn = document.getElementById('likeBtn');
+    const likeCountElem = document.getElementById('likeCount');
+    const commentForm = document.getElementById('commentForm');
+    const commentList = document.getElementById('commentList');
+    const appNameElem = document.getElementById('appName');
+    const appDescriptionElem = document.getElementById('appDescription');
+
+    function getQueryParam(param) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(param);
+    }
+
+    const appUuid = getQueryParam('uuid');
+    if (!appUuid) {
+      alert('No app UUID provided in the URL.');
+    } else {
+      likeBtn.setAttribute('data-uuid', appUuid);
+    }
+
+    let userHasLiked = false; // Track if the user has already liked the app
+
+    likeBtn.addEventListener('click', async () => {
+      if (userHasLiked) {
+        alert("You have already liked this app!");
+        return;
+      }
+      try {
+        const res = await fetch(`${API_URL}/apps/${appUuid}/like`, { method: 'POST' });
+        const data = await res.json();
+        likeCountElem.textContent = data.likes;
+        userHasLiked = true;
+      } catch (error) {
+        console.error('Error liking app:', error);
+      }
+    });
+
+    commentForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const commentText = commentForm.elements.comment.value;
+      const payload = {
+        text: commentText,
+        userId: (window.currentUser && window.currentUser.id) || 'anonymous',
+        username: (window.currentUser && window.currentUser.username) || 'Anonymous'
+      };
+
+      try {
+        const res = await fetch(`${API_URL}/apps/${appUuid}/comment`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const comment = await res.json();
+        const li = document.createElement('li');
+        li.textContent = `${comment.username}: ${comment.text}`;
+        commentList.appendChild(li);
+        commentForm.reset();
+      } catch (error) {
+        console.error('Error posting comment:', error);
+      }
+    });
+
+    async function loadAppDetails() {
+      try {
+        const res = await fetch(`${API_URL}/apps`);
+        const apps = await res.json();
+        const app = apps.find(a => a.uuid === appUuid);
+        if (app) {
+          appNameElem.textContent = app.name;
+          appNameElem.setAttribute('data-text', app.name);
+          likeCountElem.textContent = app.likes;
+          // Set the complete description
+          appDescriptionElem.textContent = app.description || 'No description available.';
+
+          if (app.comments && app.comments.length > 0) {
+            app.comments.forEach(comment => {
+              const li = document.createElement('li');
+              li.textContent = `${comment.username}: ${comment.text}`;
+              commentList.appendChild(li);
+            });
+          }
+        } else {
+          console.error('App not found');
+        }
+      } catch (error) {
+        console.error('Error loading app details:', error);
+      }
+    }
+
+    loadAppDetails();
+  </script>
+</body>
+</html>

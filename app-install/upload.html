@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OZYRIX - Upload Tool</title>
+    <link rel="stylesheet" href="assets/style.css">
+    <link rel="stylesheet" href="assets/pages.css">
+</head>
+<body class="page-body">
+    <div class="page-container">
+        <div class="page-header">
+            <h1 class="glitch-text" data-text="UPLOAD HACKING TOOL">UPLOAD TOOL</h1>
+            <p class="subtitle">Share your tools with the community</p>
+        </div>
+        
+        <div class="upload-container">
+            <div class="upload-form-container">
+                <form id="uploadForm" class="upload-form">
+                    <div class="form-group">
+                        <label for="appName">TOOL NAME</label>
+                        <input type="text" id="appName" name="name" required class="form-input" placeholder="Enter tool name">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="appDescription">DESCRIPTION</label>
+                        <textarea id="appDescription" name="description" class="form-input" rows="4" placeholder="Describe your tool..."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="appCategory">CATEGORY</label>
+                        <select id="appCategory" name="category" class="form-input">
+                            <option value="exploit">EXPLOIT</option>
+                            <option value="utilities">UTILITIES</option>
+                            <option value="utilities">UNBLOCKER</option>
+                            <option value="utilities">GAME</option>
+                            <option value="utilities">EMULATOR</option>
+                            <option value="other">OTHER</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="appFile">TOOL FILE</label>
+                        <div class="file-upload-container">
+                            <input type="file" id="appFile" name="file" required class="file-input">
+                            <div class="file-upload-ui">
+                                <div class="file-upload-placeholder" id="fileUploadPlaceholder">
+                                    <span class="upload-icon">📤</span>
+                                    <span class="upload-text">DRAG & DROP FILE OR CLICK TO SELECT</span>
+                                </div>
+                                <div class="file-upload-preview" id="fileUploadPreview" style="display: none;">
+                                    <span class="file-name" id="fileName">filename.zip</span>
+                                    <span class="file-size" id="fileSize">0 KB</span>
+                                    <button type="button" class="remove-file" id="removeFile">×</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="checkbox-container">
+                            <input type="checkbox" id="termsAgreement" required>
+                            <span class="checkmark"></span>
+                            I AGREE TO THE TERMS OF THE OZYRIX NETWORK
+                        </label>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="action-button upload-button">
+                            <span class="button-icon">🚀</span>
+                            <span class="button-text">UPLOAD TOOL</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="upload-info">
+                <div class="info-box">
+                    <h3>UPLOAD GUIDELINES</h3>
+                    <ul class="guidelines-list">
+                        <li>Tools must be packaged as a single ZIP file</li>
+                        <li>Maximum file size: 100MB</li>
+                        <li>Provide clear instructions in the description</li>
+                        <li>Ensure your tool is free of malware</li>
+                        <li>Respect intellectual property rights</li>
+                    </ul>
+                </div>
+                
+                <div class="info-box">
+                    <h3>UPLOAD STATUS</h3>
+                    <div id="uploadStatus" class="upload-status">
+                        <div class="status-indicator ready">READY FOR UPLOAD</div>
+                        <div class="progress-container" style="display: none;">
+                            <div class="progress-bar" id="uploadProgress"></div>
+                            <div class="progress-text" id="uploadProgressText">0%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Upload success modal -->
+    <div id="uploadSuccessModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>UPLOAD SUCCESSFUL</h2>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="success-animation">
+                    <div class="success-checkmark"></div>
+                </div>
+                <p>Your tool has been successfully uploaded to the repository!</p>
+                <div class="app-details" id="uploadedAppDetails">
+                    <!-- App details will be populated here -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="viewAppBtn" class="action-button">
+                    <span class="button-icon">👁️</span>
+                    <span class="button-text">VIEW TOOL</span>
+                </button>
+                <button id="uploadAnotherBtn" class="action-button">
+                    <span class="button-icon">🔄</span>
+                    <span class="button-text">UPLOAD ANOTHER</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="assets/js/pages/upload.js"></script>
+</body>
+</html>

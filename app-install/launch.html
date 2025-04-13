@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OZYRIX - Hacker Terminal</title>
+  <link rel="stylesheet" href="assets/style.css">
+  <link rel="stylesheet" href="assets/terminal.css">
+  <script src="assets/js/terminal.js" defer></script>
+</head>
+<body class="terminal-background">
+  <canvas id="matrixRain" class="matrix-rain" style="display: none;"></canvas>
+
+  <div id="biosScreen" class="bios-screen">
+    <div class="bios-header">
+      OZYRIX SYSTEM BIOS v3.14
+    </div>
+    <div class="bios-content" id="biosContent">
+      </div>
+    <div class="bios-footer">
+      <div>Press <span class="bios-key">F2</span> for Setup | <span class="bios-key">F12</span> for Boot Menu</div>
+      <div>BIOS Version: 3.14.159</div>
+    </div>
+  </div>
+
+  <div class="terminal-container" style="display: none;" id="terminalContainer">
+    <div class="terminal-header">
+      <div class="terminal-title">OZYRIX TERMINAL v3.0</div>
+      <div class="terminal-controls">
+        <span class="control minimize"></span>
+        <span class="control maximize"></span>
+        <span class="control close"></span>
+      </div>
+    </div>
+    
+    <div class="terminal-screen">
+      <div class="boot-sequence" id="bootSequence" style="display: none;">
+        </div>
+      
+      <div class="interactive-terminal" id="interactiveTerminal" style="display: none;">
+        <div class="terminal-output" id="terminalOutput">
+          </div>
+        <div class="terminal-input-line">
+          <div class="terminal-prompt" id="terminalPrompt">root@ozyrix:~#</div>
+          <input type="text" class="terminal-input" id="terminalInput" autocomplete="off" spellcheck="false">
+        </div>
+      </div>
+      
+      <div class="terminal-content" id="terminalContent" style="display: none;">
+        <div class="ascii-logo">
+          <pre>
+  ██████  ███████ ██    ██ ██████  ██ ██  ██ 
+ ██    ██    ███   ██  ██  ██  ██ ██  ██ ██  
+ ██    ██   ███    ████    ██████  ██  ███  
+ ██    ██  ███      ██    ██  ██ ██  ██ ██  
+  ██████  ███████    ██    ██  ██ ██ ██  ██ 
+
+          </pre>
+        </div>
+        
+        <div class="terminal-menu">
+          <div class="menu-item" data-page="index.html">
+            <span class="menu-icon"></span> HOME
+          </div>
+          <div class="menu-item1" data-page="store.html" id="repoMenu">
+            <span class="menu-icon"></span> REPOSITORY
+          </div>
+          <div class="menu-item" data-page="upload.html">
+            <span class="menu-icon"></span> UPLOAD
+          </div>
+          <div class="menu-item" id="terminalButton">
+            <span class="menu-icon"></span> TERMINAL
+          </div>
+          <div class="menu-item" id="statsButton">
+            <span class="menu-icon"></span> STATS
+          </div>
+        </div>
+        
+        <div class="terminal-frame">
+          <div class="frame-header">
+            <span id="frameTitle">LOADING...</span>
+            <span class="frame-status" id="connectionStatus">SECURE</span>
+          </div>
+          <iframe id="contentFrame" src="index.html" frameborder="0"></iframe>
+        </div>
+      </div>
+    </div>
+    
+    <div class="terminal-footer">
+      <div class="status-bar">
+        <span class="status-item" id="serverStatus">SERVER: CONNECTING...</span>
+        <span class="status-item" id="currentTime">00:00:00</span>
+      </div>
+    </div>
+  </div>
+  
+  <div id="statsModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>SYSTEM STATISTICS</h2>
+        <span class="close-modal">&times;</span>
+      </div>
+      <div class="modal-body" id="statsContent">
+        <div class="loading-spinner"></div>
+      </div>
+    </div>
+  </div>
+  
+  <div id="helpModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>TERMINAL HELP</h2>
+        <span class="close-modal">&times;</span>
+      </div>
+      <div class="modal-body">
+        <h3>Available Commands</h3>
+        <table class="help-table">
+          <tr>
+            <td><code>help</code></td>
+            <td>Display help information</td>
+          </tr>
+          <tr>
+            <td><code>clear</code></td>
+            <td>Clear the terminal screen</td>
+          </tr>
+          <tr>
+            <td><code>ls</code></td>
+            <td>List files in current directory</td>
+          </tr>
+          <tr>
+            <td><code>cd [dir]</code></td>
+            <td>Change directory</td>
+          </tr>
+          <tr>
+            <td><code>cat [file]</code></td>
+            <td>Display file contents</td>
+          </tr>
+          <tr>
+            <td><code>whoami</code></td>
+            <td>Display current user</td>
+          </tr>
+          <tr>
+            <td><code>date</code></td>
+            <td>Display current date/time</td>
+          </tr>
+          <tr>
+            <td><code>echo [text]</code></td>
+            <td>Display text</td>
+          </tr>
+          <tr>
+            <td><code>ping [host]</code></td>
+            <td>Ping a host</td>
+          </tr>
+          <tr>
+            <td><code>matrix</code></td>
+            <td>Toggle matrix effect</td>
+          </tr>
+          <tr>
+            <td><code>hack [target]</code></td>
+            <td>Simulate hacking a target</td>
+          </tr>
+          <tr>
+            <td><code>decrypt [file]</code></td>
+            <td>Decrypt an encrypted file</td>
+          </tr>
+          <tr>
+            <td><code>scan [network]</code></td>
+            <td>Scan a network for vulnerabilities</td>
+          </tr>
+          <tr>
+            <td><code>exit</code></td>
+            <td>Exit terminal mode</td>
+          </tr>
+        </table>
+        
+        <h3>Easter Eggs</h3>
+        <p>There are several hidden commands and features to discover.</p>
+        
+        <h3>Keyboard Shortcuts</h3>
+        <table class="help-table">
+          <tr>
+            <td><code>Up/Down</code></td>
+            <td>Navigate command history</td>
+          </tr>
+          <tr>
+            <td><code>Ctrl+L</code></td>
+            <td>Clear screen</td>
+          </tr>
+          <tr>
+            <td><code>Ctrl+C</code></td>
+            <td>Abort current command</td>
+          </tr>
+          <tr>
+            <td><code>Tab</code></td>
+            <td>Auto-complete commands</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+  
+  <script src="assets/js/bios.js"></script>
+  <script src="assets/js/main.js"></script>
+  <script src="assets/js/matrix.js"></script>
+  
+  <script>
+    // Debug: log the full URL for troubleshooting
+    console.log("Current URL:", window.location.href);
+
+    // Get token from URL query parameters
+    function getTokenFromUrl() {
+      const params = new URLSearchParams(window.location.search);
+      return params.get("token");
+    }
+
+    async function verifyLogin() {
+      const token = getTokenFromUrl();
+      console.log("Extracted token:", token);
+      if (!token) {
+        alert("No token found. Please log in to continue.");
+        window.location.href = "login.html";
+        return;
+      }
+      // Save token globally for session use, now in document.head
+      const tokenElement = document.createElement('meta');
+      tokenElement.name = "ozyrix-token";
+      tokenElement.content = token;
+      document.head.appendChild(tokenElement);
+
+      try {
+        // Verify token with the backend
+        const res = await fetch("http://localhost:3000/api/me", {
+          headers: { "Authorization": "Bearer " + token }
+        });
+        console.log("Response status from /api/me:", res.status);
+        if (res.ok) {
+          const data = await res.json();
+          window.currentUser = data.user;
+          console.log("Logged in as:", window.currentUser.username);
+          // Show terminal, hide BIOS screen
+          document.getElementById("biosScreen").style.display = "none";
+          document.getElementById("terminalContainer").style.display = "block";
+        } else {
+          const errData = await res.json();
+          console.error("Error response from /api/me:", errData);
+          alert("Session expired. Please log in again.");
+          window.location.href = "login.html";
+        }
+      } catch (err) {
+        console.error("Error verifying token:", err);
+        alert("Error connecting to server. Please try again.");
+        window.location.href = "login.html";
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", verifyLogin);
+
+    // Attach event listeners for Repository menu item
+    document.addEventListener("DOMContentLoaded", () => {
+      const repoMenu = document.getElementById("repoMenu");
+      repoMenu.addEventListener("click", () => {
+        if (!window.currentUser || !window.currentUser.id) {
+          alert("Please log in to access the Repository section.");
+          window.location.href = "login.html";
+        } else {
+          const page = repoMenu.getAttribute("data-page");
+          document.getElementById("contentFrame").src = page;
+        }
+      });
+
+      const homeMenu = document.querySelector('.menu-item[data-page="index.html"]');
+      homeMenu.addEventListener("click", () => {
+        document.getElementById("contentFrame").src = "index.html";
+      });
+    });
+
+    // Optional: Clean URL parameters after verification (do this after debug logs are read)
+    // function cleanUrl() {
+    //  history.replaceState(null, document.title, window.location.pathname);
+    // }
+    // setTimeout(cleanUrl, 500);
+  </script>
+</body>
+</html>

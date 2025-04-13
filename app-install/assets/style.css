@@ -1,0 +1,434 @@
+/* Base styles for the Ozyrix app - Hacker Theme */
+:root {
+  /* Color palette - hacker theme */
+  --primary-color: #00ff41; /* Terminal green */
+  --secondary-color: #0abdc6; /* Cyberpunk blue */
+  --accent-color: #ff00ff; /* Neon magenta */
+  --warning-color: #ff9900; /* Warning orange */
+  --danger-color: #ff2200; /* Danger red */
+  --background-dark: #0a0a0a; /* Dark background */
+  --background-medium: #121212; /* Medium background */
+  --background-light: #1a1a1a; /* Light background */
+  --text-bright: #ffffff; /* Bright white */
+  --text-dim: #cccccc; /* Dim white */
+  --terminal-green: #00ff41; /* Classic terminal green */
+  --terminal-blue: #0abdc6; /* Terminal blue */
+  --terminal-purple: #b967ff; /* Terminal purple */
+  
+  /* Font families */
+  --font-mono: 'Courier New', monospace;
+  --font-display: 'Share Tech Mono', 'Courier New', monospace;
+  --font-body: 'Share Tech Mono', 'Courier New', monospace;
+  
+  /* Sizes */
+  --header-height: 60px;
+  --footer-height: 30px;
+}
+
+/* Import web fonts */
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+/* Reset and base styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  width: 100%;
+  font-family: var(--font-body);
+  background-color: var(--background-dark);
+  color: var(--text-bright);
+  overflow: hidden;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+/* Terminal background with scanlines and glow */
+.terminal-background {
+  background-color: var(--background-dark);
+  position: relative;
+  overflow: hidden;
+}
+
+.terminal-background::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+      rgba(18, 16, 16, 0) 50%, 
+      rgba(0, 0, 0, 0.25) 50%
+  );
+  background-size: 100% 4px;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0.15;
+}
+
+.terminal-background::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(
+      circle at center,
+      rgba(10, 10, 10, 0) 0%,
+      rgba(0, 0, 0, 0.5) 100%
+  );
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Glitch text effect */
+.glitch-text {
+  font-family: var(--font-display);
+  font-weight: 700;
+  position: relative;
+  color: var(--text-bright);
+  text-shadow: 0 0 5px var(--primary-color);
+  letter-spacing: 2px;
+}
+
+.glitch-text::before,
+.glitch-text::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.glitch-text::before {
+  left: 2px;
+  text-shadow: -2px 0 var(--accent-color);
+  animation: glitch-anim-1 2s infinite linear alternate-reverse;
+}
+
+.glitch-text::after {
+  left: -2px;
+  text-shadow: 2px 0 var(--secondary-color);
+  animation: glitch-anim-2 3s infinite linear alternate-reverse;
+}
+
+@keyframes glitch-anim-1 {
+  0%, 80%, 100% { opacity: 0; }
+  40%, 60% { opacity: 0.5; }
+}
+
+@keyframes glitch-anim-2 {
+  0%, 70%, 100% { opacity: 0; }
+  30%, 50% { opacity: 0.5; }
+}
+
+/* Typewriter effect */
+.typewriter {
+  overflow: hidden;
+  border-right: 2px solid var(--primary-color);
+  white-space: nowrap;
+  margin: 0 auto;
+  letter-spacing: 2px;
+  animation: 
+      typing 3.5s steps(40, end),
+      blink-caret 0.75s step-end infinite;
+}
+
+@keyframes typing {
+  from { width: 0 }
+  to { width: 100% }
+}
+
+@keyframes blink-caret {
+  from, to { border-color: transparent }
+  50% { border-color: var(--primary-color) }
+}
+
+/* Loading spinner */
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 3px solid rgba(0, 255, 65, 0.3);
+  border-radius: 50%;
+  border-top-color: var(--primary-color);
+  animation: spin 1s ease-in-out infinite;
+  margin: 0 auto;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 40px;
+  text-align: center;
+}
+
+/* Buttons and interactive elements */
+.action-button {
+  background-color: var(--background-light);
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
+  padding: 10px 20px;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  position: relative;
+  overflow: hidden;
+}
+
+.action-button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(0, 255, 65, 0.2),
+      transparent
+  );
+  transition: all 0.4s ease;
+}
+
+.action-button:hover {
+  background-color: rgba(0, 255, 65, 0.1);
+  box-shadow: 0 0 10px rgba(0, 255, 65, 0.5);
+}
+
+.action-button:hover::before {
+  left: 100%;
+}
+
+.action-button:active {
+  transform: scale(0.98);
+}
+
+.button-icon {
+  font-size: 18px;
+}
+
+/* Form elements */
+.form-input {
+  background-color: var(--background-light);
+  border: 1px solid var(--secondary-color);
+  color: var(--text-bright);
+  padding: 10px 15px;
+  font-family: var(--font-mono);
+  width: 100%;
+  transition: all 0.3s ease;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 5px rgba(0, 255, 65, 0.5);
+}
+
+.form-input::placeholder {
+  color: rgba(204, 204, 204, 0.5);
+}
+
+/* Checkbox styling */
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  position: relative;
+  padding-left: 35px;
+  cursor: pointer;
+  font-size: 14px;
+  user-select: none;
+}
+
+.checkbox-container input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.checkmark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 20px;
+  width: 20px;
+  background-color: var(--background-light);
+  border: 1px solid var(--secondary-color);
+}
+
+.checkbox-container:hover input ~ .checkmark {
+  background-color: var(--background-medium);
+}
+
+.checkbox-container input:checked ~ .checkmark {
+  background-color: var(--primary-color);
+}
+
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+.checkbox-container input:checked ~ .checkmark:after {
+  display: block;
+}
+
+.checkbox-container .checkmark:after {
+  left: 6px;
+  top: 2px;
+  width: 5px;
+  height: 10px;
+  border: solid var(--background-dark);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+/* Modal styling */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(4px);
+}
+
+.modal-content {
+  background-color: var(--background-medium);
+  margin: 10% auto;
+  border: 1px solid var(--secondary-color);
+  box-shadow: 0 0 20px rgba(10, 189, 198, 0.3);
+  width: 80%;
+  max-width: 600px;
+  animation: modalFadeIn 0.3s;
+  position: relative;
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; transform: translateY(-50px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.modal-header {
+  padding: 15px;
+  border-bottom: 1px solid var(--background-light);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header h2 {
+  font-family: var(--font-display);
+  color: var(--primary-color);
+  font-size: 1.5rem;
+  margin: 0;
+}
+
+.close-modal {
+  color: var(--text-dim);
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close-modal:hover {
+  color: var(--primary-color);
+}
+
+.modal-body {
+  padding: 20px;
+}
+
+.modal-footer {
+  padding: 15px;
+  border-top: 1px solid var(--background-light);
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+/* Status indicators */
+.status-value {
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-size: 0.9em;
+}
+
+.status-value.online {
+  background-color: rgba(0, 255, 65, 0.2);
+  color: var(--primary-color);
+}
+
+.status-value.warning {
+  background-color: rgba(255, 153, 0, 0.2);
+  color: var(--warning-color);
+}
+
+.status-value.error {
+  background-color: rgba(255, 34, 0, 0.2);
+  color: var(--danger-color);
+}
+
+/* Screen shake animation */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+.shake {
+  animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+/* Matrix rain effect */
+.matrix-rain {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 100;
+  opacity: 0.15;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .modal-content {
+      width: 95%;
+      margin: 5% auto;
+  }
+  
+  .action-button {
+      padding: 8px 16px;
+      font-size: 12px;
+  }
+}

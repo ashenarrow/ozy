@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>My Installed Tools</title>
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <div>
+    <h1>My Installed Tools</h1>
+    <ul id="installedList"></ul>
+  </div>
+  
+  <script>
+    const API_URL = 'http://localhost:3000/api';
+    
+    async function loadInstalledApps() {
+      if (!window.currentUser || !window.currentUser.id) {
+        document.body.innerHTML = '<p>Please log in to see your installed tools.</p>';
+        return;
+      }
+      
+      try {
+        const res = await fetch(`${API_URL}/users/${window.currentUser.id}/installed`);
+        if (!res.ok) {
+          throw new Error('Failed to fetch installed apps');
+        }
+        const installedApps = await res.json();
+        const installedList = document.getElementById('installedList');
+        installedList.innerHTML = '';
+        installedApps.forEach(app => {
+          const li = document.createElement('li');
+          li.textContent = `${app.name} - ${app.description}`;
+          installedList.appendChild(li);
+        });
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    
+    loadInstalledApps();
+  </script>
+</body>
+</html>
