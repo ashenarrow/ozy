@@ -69,7 +69,6 @@ function authenticateToken(req, res, next) {
   });
 }
 
-
 // ================= User Authentication Endpoints =================
 
 // Signup endpoint: creates a new user and returns a token
@@ -316,6 +315,8 @@ app.post('/api/apps/:uuid/comment', (req, res) => {
 
 // Serve the installer ZIP file
 app.get('/api/installer', (req, res) => {
+  // Explicitly set CORS header for this response
+  res.setHeader('Access-Control-Allow-Origin', '*');
   const zipPath = path.join(__dirname, 'app-install', 'app-install.zip');
   res.download(zipPath, 'app-install.zip', (err) => {
     if (err) {
