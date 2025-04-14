@@ -16,6 +16,16 @@ const JWT_SECRET = process.env.JWT_SECRET;
 app.use(cors());
 app.use(express.json());
 
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header(
+    'Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content-Type, Accept, Authorization'
+  );
+  next();
+});
+
+
 // Directory for storing uploads and metadata
 const uploadsDir = path.join(__dirname, 'uploads');
 const appsJsonPath = path.join(uploadsDir, 'apps.json');
