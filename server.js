@@ -6,10 +6,11 @@ const path = require('path');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const axios = require('axios'); // For self‑pinging
 
 const app = express();
 const PORT = 3000;
-const JWT_SECRET = 'your_secret_key_here'; // Replace with a secure key or load from env
+const JWT_SECRET = process.env.JWT_SECRET;
 
 // Enable CORS and JSON parsing
 app.use(cors());
@@ -49,6 +50,18 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
+// A global timestamp to record the time of the most recent non‑pinger request.
+let lastActivity = Date.now();
+
+// Middleware to update the last activity timestamp for every request.
+// (Optionally you can exclude the endpoint(s) that are used for the self‑ping to avoid a ping–loop)
+app.use((req, res, next) => {
+  // You might want to exclude a specific route if using it as the ping target.
+  // Example: if(req.path === '/api/stats') return next();
+  lastActivity = Date.now();
+  next();
+});
+
 /**
  * JWT authentication middleware.
  * Expects the token to be sent as "Authorization: Bearer <token>".
@@ -71,7 +84,6 @@ function authenticateToken(req, res, next) {
 
 // ================= User Authentication Endpoints =================
 
-// Signup endpoint: creates a new user and returns a token
 app.post('/api/signup', async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -104,7 +116,6 @@ app.post('/api/signup', async (req, res) => {
   }
 });
 
-// Login endpoint: verifies credentials and returns a token
 app.post('/api/login', async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -127,7 +138,6 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
-// Endpoint to verify token and get user info
 app.get('/api/me', authenticateToken, (req, res) => {
   const users = JSON.parse(fs.readFileSync(usersJsonPath));
   const user = users.find(u => u.id === req.user.id);
@@ -138,7 +148,6 @@ app.get('/api/me', authenticateToken, (req, res) => {
 
 // ================= App/Tool Endpoints =================
 
-// Upload endpoint (protected by token)
 app.post('/api/upload', authenticateToken, upload.single('file'), (req, res) => {
   try {
     const { appName, description, category } = req.body;
@@ -176,7 +185,6 @@ app.post('/api/upload', authenticateToken, upload.single('file'), (req, res) => 
   }
 });
 
-// List all apps
 app.get('/api/apps', (req, res) => {
   try {
     const appsList = JSON.parse(fs.readFileSync(appsJsonPath));
@@ -187,7 +195,6 @@ app.get('/api/apps', (req, res) => {
   }
 });
 
-// List apps uploaded by a specific user
 app.get('/api/users/:userId/apps', (req, res) => {
   try {
     const { userId } = req.params;
@@ -200,7 +207,6 @@ app.get('/api/users/:userId/apps', (req, res) => {
   }
 });
 
-// Get app statistics
 app.get('/api/apps/:uuid/stats', (req, res) => {
   try {
     const { uuid } = req.params;
@@ -220,7 +226,6 @@ app.get('/api/apps/:uuid/stats', (req, res) => {
   }
 });
 
-// Record a view for an app
 app.post('/api/apps/:uuid/view', (req, res) => {
   try {
     const { uuid } = req.params;
@@ -237,7 +242,6 @@ app.post('/api/apps/:uuid/view', (req, res) => {
   }
 });
 
-// Like an app
 app.post('/api/apps/:uuid/like', (req, res) => {
   try {
     const { uuid } = req.params;
@@ -254,7 +258,6 @@ app.post('/api/apps/:uuid/like', (req, res) => {
   }
 });
 
-// Download an app and record installation
 app.get('/api/apps/:uuid/download', (req, res) => {
   try {
     const appsList = JSON.parse(fs.readFileSync(appsJsonPath));
@@ -266,7 +269,7 @@ app.get('/api/apps/:uuid/download', (req, res) => {
     appsList[appIndex].downloads += 1;
     fs.writeFileSync(appsJsonPath, JSON.stringify(appsList, null, 2));
 
-    // Optionally record installation for a user, if userId is provided as query param
+    // Optionally record installation for a user if userId is provided
     if (req.query.userId) {
       const users = JSON.parse(fs.readFileSync(usersJsonPath));
       const userIndex = users.findIndex(u => u.id === req.query.userId);
@@ -288,7 +291,6 @@ app.get('/api/apps/:uuid/download', (req, res) => {
   }
 });
 
-// Add a comment to an app
 app.post('/api/apps/:uuid/comment', (req, res) => {
   try {
     const { uuid } = req.params;
@@ -313,9 +315,7 @@ app.post('/api/apps/:uuid/comment', (req, res) => {
   }
 });
 
-// Serve the installer ZIP file
 app.get('/api/installer', (req, res) => {
-  // Explicitly set CORS header for this response
   res.setHeader('Access-Control-Allow-Origin', '*');
   const zipPath = path.join(__dirname, 'app-install', 'app-install.zip');
   res.download(zipPath, 'app-install.zip', (err) => {
@@ -326,7 +326,6 @@ app.get('/api/installer', (req, res) => {
   });
 });
 
-// Provide server statistics for dashboard
 app.get('/api/stats', (req, res) => {
   try {
     const appsList = JSON.parse(fs.readFileSync(appsJsonPath));
@@ -355,7 +354,6 @@ app.get('/api/stats', (req, res) => {
   }
 });
 
-// Get installed apps for a user
 app.get('/api/users/:userId/installed', (req, res) => {
   try {
     const { userId } = req.params;
@@ -373,7 +371,30 @@ app.get('/api/users/:userId/installed', (req, res) => {
   }
 });
 
-// Start the server
+// ================= Self‑Ping to Keep the Server Awake =================
+
+// URL to ping – in your Render deployment this should be the public URL
+const SERVER_URL = 'https://ozy.onrender.com';
+
+// Set an interval to ping every 2 minutes (120000 ms)
+setInterval(() => {
+  const idleTime = Date.now() - lastActivity;
+  // If no user activity in the last 2 minutes, perform the ping.
+  if (idleTime > 2 * 60 * 1000) {
+    axios.get(SERVER_URL + '/api/stats')
+      .then(response => {
+        console.log('Self‑ping successful:', response.data);
+      })
+      .catch(error => {
+        console.error('Error during self‑ping:', error.message);
+      });
+  } else {
+    console.log('Recent user activity detected; skipping self‑ping.');
+  }
+}, 2 * 60 * 1000);
+
+// ================= Start the Server =================
+
 app.listen(PORT, () => {
   console.log(`Ozyrix backend server running on http://localhost:${PORT}`);
 });
