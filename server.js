@@ -182,14 +182,12 @@ app.get('/api/me', authenticateToken, (req, res) => {
 app.post('/api/upload', upload.single('file'), (req, res) => {
   try {
     const { appName, description, category } = req.body;
-    const userId = req.user.id;
     const appEntry = {
       uuid: uuidv4(),
       name: appName || req.file.originalname,
       description: description || '',
       category: category || 'other',
       filePath: req.file.path,
-      userId: userId,
       likes: 0,
       downloads: 0,
       views: 0,
