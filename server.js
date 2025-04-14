@@ -36,6 +36,15 @@ app.use((req, res, next) => {
   next();
 });
 
+// **Add this OPTIONS handler:**
+app.options('*', (req, res) => {
+  const origin = req.headers.origin || 'null';
+  res.setHeader('Access-Control-Allow-Origin', origin);
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS'); // Include OPTIONS
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  // res.header('Access-Control-Allow-Credentials', 'true');
+  res.status(200).end(); // Respond to the OPTIONS request
+});
 
 
 // Directory for storing uploads and metadata
@@ -93,7 +102,7 @@ function authenticateToken(req, res, next) {
   const token = authHeader && authHeader.split(' ')[1];
   console.log("Received token for verification:", token);
   if (!token) return res.status(401).json({ error: 'Access token required' });
-  
+
   jwt.verify(token, JWT_SECRET, (err, user) => {
     if (err) {
       console.error("JWT verification error:", err);
