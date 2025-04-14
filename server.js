@@ -13,17 +13,29 @@ const PORT = 3000;
 const JWT_SECRET = process.env.JWT_SECRET;
 
 // Enable CORS and JSON parsing
-app.use(cors());
+app.use(cors({
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin || origin === "null") {
+      return callback(null, true);
+    }
+    // List allowed origins, or simply allow all if needed:
+    callback(null, true);
+  }
+}));
+
 app.use(express.json());
 
 app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header(
-    'Access-Control-Allow-Headers',
-    'Origin, X-Requested-With, Content-Type, Accept, Authorization'
-  );
+  // Ensure origin is always set even if absent
+  const origin = req.headers.origin || 'null';
+  res.setHeader('Access-Control-Allow-Origin', origin);
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  // If you need to allow credentials, uncomment the next line:
+  // res.header('Access-Control-Allow-Credentials', 'true');
   next();
 });
+
 
 
 // Directory for storing uploads and metadata
