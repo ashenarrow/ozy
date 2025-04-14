@@ -179,7 +179,7 @@ app.get('/api/me', authenticateToken, (req, res) => {
 
 // ================= App/Tool Endpoints =================
 
-app.post('/api/upload', authenticateToken, upload.single('file'), (req, res) => {
+app.post('/api/upload', upload.single('file'), (req, res) => {
   try {
     const { appName, description, category } = req.body;
     const userId = req.user.id;
